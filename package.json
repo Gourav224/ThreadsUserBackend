@@ -1,0 +1,27 @@
+{
+	"name": "prographql",
+	"main": "index.ts",
+	"type": "module",
+	"scripts": {
+		"start": "bun run src/index.ts",
+		"dev": "bun run src/index.ts --watch",
+		"build": "tsc",
+		"serve": "node dist/index.js",
+		"nodemon": "nodemon src/index.ts"
+	},
+	"devDependencies": {
+		"@types/bun": "latest",
+		"nodemon": "^3.1.7"
+	},
+	"peerDependencies": {
+		"typescript": "^5.0.0"
+	},
+	"dependencies": {
+		"@apollo/server": "^4.11.0",
+		"@types/express": "^4.17.21",
+		"body-parser": "^1.20.3",
+		"cors": "^2.8.5",
+		"express": "^4.21.0",
+		"graphql": "^16.9.0"
+	}
+}
