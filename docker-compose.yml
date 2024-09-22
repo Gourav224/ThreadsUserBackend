@@ -1,0 +1,21 @@
+services:
+  postgres:
+    container_name: threads-db
+    image: postgres:latest
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: threads
+      POSTGRES_PASSWORD: 123456798
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+volumes:
+  postgres_data:
