@@ -6,13 +6,20 @@ const queries = {
 		const token = await UserService.getUserToken(payload);
 		return token;
 	},
+	getCurrentUser: async (_: any, payload: any, context: any) => {
+		console.log(context);
+		return await UserService.getUser(context.user.email);
+	}
 };
-
 
 const mutations = {
 	createUser: async (_: any, payload: IUser) => {
-		const user = await UserService.createUser(payload);
-		return user.id;
+		try {
+			const user = await UserService.createUser(payload);
+			return user;
+		} catch (error: any) {
+			throw new Error(error?.message);
+		}
 	},
 };
 

@@ -18,7 +18,7 @@ class UserService {
 	public static async createUser(user: IUser) {
 		// Validate user input
 		if (!user.firstName || !user.email || !user.password) {
-			return { id: "First name, email, and password are required." };
+			throw new Error("First name, email, and password are required.");
 		}
 
 		const { firstName, lastName, email, password } = user;
@@ -29,7 +29,7 @@ class UserService {
 		});
 
 		if (existingUser) {
-			return { id: "Email already in use." };
+			throw new Error("Email already in use.");
 		}
 
 		// Generate salt and hash the password
@@ -37,7 +37,7 @@ class UserService {
 		const hashPassword = await hash(password, salt);
 
 		try {
-			return await prisma.user.create({
+			const newUser = await prisma.user.create({
 				data: {
 					firstName,
 					lastName: lastName || "",
@@ -46,24 +46,25 @@ class UserService {
 					salt, // Store salt if needed for later password verification
 				},
 			});
+			return newUser.id;
 		} catch (error) {
-			return { id: "User creation failed. Please try again." };
+			throw new Error("User creation failed. Please try again.");
 		}
 	}
-	private static async getUser(email: string) {
+
+	public static async getUser(email: string) {
 		return await prisma.user.findUnique({
 			where: { email },
 		});
 	}
+
 	public static async getUserToken(payload: IUserToken) {
 		const { email, password } = payload;
 		const user = await this.getUser(email);
 		if (!user) {
 			throw new Error("User not found.");
 		}
-		const salt = await genSalt(10);
-		const hashPassword = await hash(password, salt);
-		const isValid = await compare(hashPassword, user.password);
+		const isValid = await compare(password, user.password);
 		if (!isValid) {
 			throw new Error("Invalid password.");
 		}
@@ -72,6 +73,10 @@ class UserService {
 			process.env.JWT_SECRET as string,
 		);
 		return token;
+	}
+
+	public static decodeToken(token: string) {
+		return jwt.verify(token, process.env.JWT_SECRET as string);
 	}
 }
 
